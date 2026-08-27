@@ -6,6 +6,7 @@ const repairs = [
 
 const storageKey = 'myrepair-owners';
 const ecoLifeStorageKey = 'homeenergycodes.savedInput';
+const consentStorageKey = 'myrepair-privacy-consent';
 const ecoLifeUrl = 'https://hinodeyasuzuki.github.io/myecoliferecords/';
 const equipmentApiUrl = 'https://hinodeyasuzuki.github.io/homeenergycodes-public/api/v1/equip.json';
 const savedOwners = JSON.parse(localStorage.getItem(storageKey) || '{}');
@@ -13,6 +14,99 @@ let ecoLifeData = readEcoLifeData();
 let equipmentList = [];
 let equipmentById = new Map();
 let activeFilter = 'all';
+
+const modalContent = {
+  privacy: {
+    title: 'プライバシーポリシー',
+    body: `
+      <p>このアプリは、修理の候補や記録の選択状態を端末内のブラウザに保存します。</p>
+      <p>保存される情報は、あなたが選んだ「自分で・身近な人・業者」の判断結果や、アプリの設定です。外部のサーバーへ送信されることはありません。</p>
+      <ul>
+        <li>データはこの端末のローカルストレージに保存されます。</li>
+        <li>外部サービスへの自動送信は行いません。</li>
+        <li>ブラウザの履歴やキャッシュとは別の保存先で管理されます。</li>
+      </ul>
+      <p>保存内容の確認や削除は、ブラウザの設定から localStorage を管理していただく形になります。</p>
+    `
+  },
+  about: {
+    title: 'このアプリについて',
+    body: `
+      <p>Myリペアは、「日常の小さな故障に、どこで頼めるか」を見える化するための手帳アプリです。</p>
+      <p>衣類、靴、住まい、水回り、電気などの修理項目を見ながら、自分で直せるか・近くの人に頼めるか・業者に頼むかを整理できます。</p>
+      <p>入力内容はこの端末だけに保存されるため、いつでも気軽にメモとして使えます。</p>
+      <p><a href="https://www.hinodeya-ecolife.com/" target="_blank" rel="noopener noreferrer">有限会社ひのでやエコライフ研究所</a>が提供しています。</p>
+    `
+  }
+};
+
+function openInfoModal(type) {
+  const infoModal = document.getElementById('info-modal');
+  const infoTitle = document.getElementById('info-title');
+  const infoBody = document.getElementById('info-body');
+  const content = modalContent[type];
+  if (!content || !infoModal || !infoTitle || !infoBody) return;
+  infoTitle.textContent = content.title;
+  infoBody.innerHTML = content.body;
+  infoModal.classList.remove('hidden');
+  infoModal.setAttribute('aria-hidden', 'false');
+}
+
+function closeBackdrop(modal) {
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function showConsentModalIfNeeded() {
+  const consentModal = document.getElementById('consent-modal');
+  if (!consentModal) return;
+  if (localStorage.getItem(consentStorageKey) === 'accepted') {
+    closeBackdrop(consentModal);
+    return;
+  }
+  consentModal.classList.remove('hidden');
+  consentModal.setAttribute('aria-hidden', 'false');
+}
+
+function handleConsent(value) {
+  localStorage.setItem(consentStorageKey, value);
+  const consentModal = document.getElementById('consent-modal');
+  closeBackdrop(consentModal);
+}
+
+function bindFooterModals() {
+  document.querySelectorAll('[data-modal]').forEach(button => {
+    button.addEventListener('click', () => {
+      openInfoModal(button.dataset.modal);
+    });
+  });
+
+  document.querySelectorAll('[data-close-modal]').forEach(button => {
+    button.addEventListener('click', () => {
+      const modalId = button.dataset.closeModal === 'consent' ? 'consent-modal' : 'info-modal';
+      const modal = document.getElementById(modalId);
+      closeBackdrop(modal);
+    });
+  });
+
+  document.querySelectorAll('[data-consent]').forEach(button => {
+    button.addEventListener('click', () => {
+      handleConsent(button.dataset.consent === 'accept' ? 'accepted' : 'declined');
+    });
+  });
+
+  ['consent-modal', 'info-modal'].forEach(id => {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.addEventListener('click', event => {
+      if (event.target === modal) closeBackdrop(modal);
+    });
+  });
+}
+
+bindFooterModals();
+showConsentModalIfNeeded();
 
 function linkFor(id) {
   return `https://s8.hinodeya-ecolife.com/repairinfo/equipment.php?equipcode=${id}`;

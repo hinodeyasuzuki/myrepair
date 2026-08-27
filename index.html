@@ -28,7 +28,7 @@
         <div class="intro-copy">
           <p class="eyebrow">REPAIR, REMEMBER, REUSE</p>
           <h1>直せることが、<br><em>暮らしの自信</em>になる。</h1>
-          <p class="intro-text">身近な故障への対処方法と、頼れる人を記録しておくための修理リストです。</p>
+          <p class="intro-text">身近な故障への対処方法と、頼れる人を記録しておくための修理リストです。自分で直せますか？</p>
         </div>
         <div class="progress-panel" aria-label="修理スキルの進捗">
           <div class="progress-top"><span>修理の手帖</span><strong id="progress-label">0 / 34</strong></div>
@@ -46,7 +46,7 @@
 
       <section class="legend-row">
         <!-- <p><span class="legend-icon done">✓</span> 登録済み <span class="legend-icon empty">○</span> 未登録</p> -->
-        <p class="legend-tone"><span class="legend-deep"></span>濃い色 = 自分でできる</p>
+        <!-- <p class="legend-tone"><span class="legend-deep"></span>濃い色 = 自分でできる</p> -->
         <p class="sync-status" id="sync-status">変更は自動保存されます</p>
       </section>
       <div class="repair-header" aria-hidden="true"><span>修理項目（ヒント）</span><span>修理記録</span><span>修理・頼めますか？</span></div>
@@ -54,8 +54,42 @@
       <p class="empty-state" id="empty-state" hidden>条件に合う修理項目がありません。</p>
     </main>
 
-    <footer class="footer"><span>MY REPAIR / PERSONAL KNOWLEDGE BASE</span><a href="https://hinodeyasuzuki.github.io/myecoliferecords/" target="_blank" rel="noreferrer">Myエコライフ記録 ↗</a></footer>
+    <footer class="footer">
+      <span>MY REPAIR / PERSONAL KNOWLEDGE BASE</span>
+      <div class="footer-links">
+        <button class="footer-link" type="button" data-modal="privacy">プライバシーポリシー</button>
+        <button class="footer-link" type="button" data-modal="about">このアプリについて</button>
+        <a href="https://hinodeyasuzuki.github.io/myecoliferecords/" target="_blank" rel="noreferrer">Myエコライフ記録 ↗</a>
+      </div>
+    </footer>
   </div>
+
+  <div class="modal-backdrop hidden" id="consent-modal" aria-hidden="true">
+    <div class="modal-panel consent-panel" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+      <button class="modal-close" type="button" data-close-modal="consent" aria-label="閉じる">×</button>
+      <p class="modal-eyebrow">はじめに</p>
+      <h2 id="consent-title">このアプリのご利用について</h2>
+      <p>Myリペアは、修理の選択状況や記録をこの端末のブラウザにのみ保存します。外部サーバーには情報を送信せず、個人情報の共有は行いません。</p>
+      <p>あなたが選んだ修理の候補と連絡先の目安は、端末内で管理されます。プライバシーポリシーをご確認のうえ、同意してご利用ください。</p>
+      <div class="consent-policy-link-wrap">
+        <button class="inline-link" type="button" data-modal="privacy">プライバシーポリシーを見る</button>
+      </div>
+      <div class="consent-actions">
+        <button class="secondary-button" type="button" data-consent="decline">同意しない</button>
+        <button class="primary-button" type="button" data-consent="accept">同意して利用を開始</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="info-modal" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="info-title">
+      <button class="modal-close" type="button" data-close-modal="info" aria-label="閉じる">×</button>
+      <p class="modal-eyebrow">情報</p>
+      <h2 id="info-title">このアプリについて</h2>
+      <div id="info-body"></div>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>
