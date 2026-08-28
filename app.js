@@ -11,10 +11,11 @@ const consentVersion = '2026-08-28';
 const legacyConsentStorageKey = 'myrepair-privacy-consent';
 const legacyEcoLifeConsentKey = 'myecoliferecords.privacyPolicyConsent';
 const legacyEcoLifeConsentVersion = '2026-08-27';
-const ecoLifeUrl = 'https://hinodeyasuzuki.github.io/myecoliferecords/';
+const ecoLifeUrl = '../myecoliferecords/';
+const apiUrl = '../api/index.php';
 const equipmentApiUrl = 'https://hinodeyasuzuki.github.io/homeenergycodes-public/api/v1/equip.json';
-const savedOwners = JSON.parse(localStorage.getItem(storageKey) || '{}');
-let ecoLifeData = readEcoLifeData();
+let savedOwners = {};
+let ecoLifeData = {};
 let equipmentList = [];
 let equipmentById = new Map();
 let activeFilter = 'all';
@@ -136,13 +137,34 @@ function categoryMembers(categoryId) {
   });
 }
 
-function readEcoLifeData() {
+function readLocalEcoLifeData() {
   try {
     return JSON.parse(localStorage.getItem(ecoLifeStorageKey) || '{}');
   } catch (error) {
     console.error('Myエコライフ記録の読み込みに失敗しました', error);
     return {};
   }
+}
+
+async function readApiResource(resource, fallback) {
+  try {
+    const response = await fetch(`${apiUrl}?resource=${resource}`, { credentials: 'same-origin' });
+    if (!response.ok) throw new Error(`API ${response.status}`);
+    const result = await response.json();
+    return result.data ?? fallback;
+  } catch (error) {
+    console.error(`APIデータの読み込みに失敗しました: ${resource}`, error);
+    return fallback;
+  }
+}
+
+function saveApiResource(resource, data) {
+  return fetch(`${apiUrl}?resource=${resource}`, {
+    method: 'PUT',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
 }
 
 function recordMatchesRepair(itemIds, product) {
@@ -262,14 +284,20 @@ function updateProgress() {
 document.querySelector('#repair-grid').addEventListener('change', event => {
   if (!event.target.matches('input[type="radio"]')) return;
   savedOwners[event.target.dataset.index] = event.target.value;
-  localStorage.setItem(storageKey, JSON.stringify(savedOwners));
+  saveApiResource('repair', savedOwners).catch(error => {
+    console.error('修理可能性の保存に失敗しました', error);
+    document.querySelector('#sync-status').textContent = '保存に失敗しました';
+    return;
+  });
   document.querySelector('#sync-status').textContent = '保存しました';
   updateProgress();
 });
 window.addEventListener('storage', event => {
   if (event.key !== ecoLifeStorageKey) return;
-  ecoLifeData = readEcoLifeData();
-  render();
+  readApiResource('ecolife', {}).then(data => {
+    ecoLifeData = data;
+    render();
+  });
 });
 document.querySelector('#repair-grid').addEventListener('toggle', event => {
   const details = event.target;
@@ -301,19 +329,21 @@ document.querySelector('#theme-toggle').addEventListener('click', () => {
 });
 if (localStorage.getItem('myrepair-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
 
-updateFilters();
-render();
+async function boot() {
+  savedOwners = await readApiResource('repair', {});
+  ecoLifeData = await readApiResource('ecolife', readLocalEcoLifeData());
+  updateFilters();
+  render();
 
-fetch(equipmentApiUrl)
-  .then(response => {
+  try {
+    const response = await fetch(equipmentApiUrl);
     if (!response.ok) throw new Error(`機器情報の取得に失敗しました (${response.status})`);
-    return response.json();
-  })
-  .then(equipment => {
-    equipmentList = equipment;
-    equipmentById = new Map(equipment.map(item => [String(item.id), item]));
+    equipmentList = await response.json();
+    equipmentById = new Map(equipmentList.map(item => [String(item.id), item]));
     render();
-  })
-  .catch(error => {
+  } catch (error) {
     console.error(error);
-  });
+  }
+}
+
+boot();
