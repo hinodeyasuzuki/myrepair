@@ -1,4 +1,12 @@
 import { createSyncStore } from "../ehome/sync.js";
+import { getCurrentTenant } from "../ehome/tenant.js";
+
+getCurrentTenant().then((tenant) => {
+  if (!tenant) return;
+  document.title = `${tenant.name} | Myリペア`;
+  const subtitle = document.querySelector("#tenant-subtitle");
+  if (subtitle) subtitle.textContent = tenant.name;
+}).catch((error) => console.error("自治体設定の取得に失敗しました", error));
 
 const repairs = [
   ['衣類', '服のボタンがとれた', ['810', '830']], ['衣類', '服が黄ばんだ', ['810', '830']], ['衣類', '服の縫い目がほつれた', ['810', '830']], ['衣類', '服のゴムがのびた', ['830', '840']], ['衣類', 'ファスナーのかみ合わせが悪くなった', ['813', '877']], ['衣類', 'ズボンに穴があいた', ['813', '831']], ['衣類', 'レインウェアの撥水がなくなった', ['856']], ['靴', '靴底がすり減った', ['860']], ['靴', '革靴が色あせた', ['863']],
@@ -25,14 +33,14 @@ const modalContent = {
   privacy: {
     title: 'プライバシーポリシー',
     body: `
-      <p>このアプリは、修理の候補や記録の選択状態を端末内のブラウザに保存します。</p>
-      <p>保存される情報は、あなたが選んだ「自分で・身近な人・業者」の判断結果や、アプリの設定です。外部のサーバーへ送信されることはありません。</p>
+      <p>このアプリは、修理の候補や記録の選択状態をブラウザに保存し、同期時にCookieセッションに対応するサーバーへ保存します。</p>
+      <p>保存される情報は、あなたが選んだ「自分で・身近な人・業者」の判断結果や、アプリの設定です。他の利用者へ公開されることはありません。</p>
       <ul>
-        <li>データはこの端末のローカルストレージに保存されます。</li>
-        <li>外部サービスへの自動送信は行いません。</li>
-        <li>ブラウザの履歴やキャッシュとは別の保存先で管理されます。</li>
+        <li>データはブラウザに保存され、ページ離脱時などにサーバーと同期されます。</li>
+        <li>Cookieは利用者のデータを識別するために使用します。</li>
+        <li>通信はHTTPSで行い、サーバーではセッション単位でアクセスを制限します。</li>
       </ul>
-      <p>保存内容の確認や削除は、ブラウザの設定から localStorage を管理していただく形になります。</p>
+      <p>ブラウザのCookieを削除すると、サーバー上のデータを呼び出せなくなる場合があります。削除依頼は運営者へ連絡してください。</p>
     `
   },
   about: {
@@ -293,12 +301,6 @@ document.addEventListener('click', event => {
     closeOpenPopup();
   }
 });
-document.querySelector('#theme-toggle').addEventListener('click', () => {
-  const dark = document.documentElement.dataset.theme === 'dark';
-  document.documentElement.dataset.theme = dark ? '' : 'dark';
-  localStorage.setItem('myrepair-theme', dark ? 'light' : 'dark');
-});
-if (localStorage.getItem('myrepair-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
 
 updateFilters();
 render();
