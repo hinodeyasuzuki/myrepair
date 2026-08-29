@@ -7,10 +7,6 @@ const repairs = [
 const storageKey = 'myrepair-owners';
 const ecoLifeStorageKey = 'homeenergycodes.savedInput';
 const consentStorageKey = 'ecolife.privacyPolicyConsent';
-const consentVersion = '2026-08-28';
-const legacyConsentStorageKey = 'myrepair-privacy-consent';
-const legacyEcoLifeConsentKey = 'myecoliferecords.privacyPolicyConsent';
-const legacyEcoLifeConsentVersion = '2026-08-27';
 const ecoLifeUrl = 'https://hinodeyasuzuki.github.io/myecoliferecords/';
 const equipmentApiUrl = 'https://hinodeyasuzuki.github.io/homeenergycodes-public/api/v1/equip.json';
 const savedOwners = JSON.parse(localStorage.getItem(storageKey) || '{}');
@@ -65,10 +61,7 @@ function closeBackdrop(modal) {
 function showConsentModalIfNeeded() {
   const consentModal = document.getElementById('consent-modal');
   if (!consentModal) return;
-  const acceptedPreviously = localStorage.getItem(legacyConsentStorageKey) === 'accepted'
-    || localStorage.getItem(legacyEcoLifeConsentKey) === legacyEcoLifeConsentVersion;
-  if (localStorage.getItem(consentStorageKey) === consentVersion || acceptedPreviously) {
-    if (acceptedPreviously) localStorage.setItem(consentStorageKey, consentVersion);
+  if (localStorage.getItem(consentStorageKey)) {
     closeBackdrop(consentModal);
     return;
   }
@@ -77,7 +70,7 @@ function showConsentModalIfNeeded() {
 }
 
 function handleConsent(value) {
-  if (value === 'accepted') localStorage.setItem(consentStorageKey, consentVersion);
+  if (value === 'accepted') localStorage.setItem(consentStorageKey, new Date().toISOString().slice(0, 10));
   const consentModal = document.getElementById('consent-modal');
   closeBackdrop(consentModal);
 }
