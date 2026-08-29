@@ -1,3 +1,5 @@
+import { createSyncStore } from "../ehome/sync.js";
+
 const repairs = [
   ['衣類', '服のボタンがとれた', ['810', '830']], ['衣類', '服が黄ばんだ', ['810', '830']], ['衣類', '服の縫い目がほつれた', ['810', '830']], ['衣類', '服のゴムがのびた', ['830', '840']], ['衣類', 'ファスナーのかみ合わせが悪くなった', ['813', '877']], ['衣類', 'ズボンに穴があいた', ['813', '831']], ['衣類', 'レインウェアの撥水がなくなった', ['856']], ['靴', '靴底がすり減った', ['860']], ['靴', '革靴が色あせた', ['863']],
   ['住まい', '網戸が破れた', ['12']], ['住まい', 'アルミサッシ・網戸が開けにくい', ['10']], ['住まい', 'フローリングがへこんだ', ['22']], ['住まい', '雨漏りがする', ['23']], ['水回り', 'トイレの便器内に水がちょろちょろ流れ続ける', ['73']], ['水回り', '蛇口から水漏れしている', ['74']], ['水回り', 'キッチンの排水がつまった', ['75']], ['家事', '陶器が割れた', ['151']], ['住まい', '玄関の鍵が回しにくい', ['14']],
@@ -7,9 +9,13 @@ const repairs = [
 const storageKey = 'myrepair-owners';
 const ecoLifeStorageKey = 'homeenergycodes.savedInput';
 const consentStorageKey = 'ecolife.privacyPolicyConsent';
-const ecoLifeUrl = 'https://hinodeyasuzuki.github.io/myecoliferecords/';
+const ecoLifeUrl = '../myecoliferecords/';
 const equipmentApiUrl = 'https://hinodeyasuzuki.github.io/homeenergycodes-public/api/v1/equip.json';
-const savedOwners = JSON.parse(localStorage.getItem(storageKey) || '{}');
+const repairSyncStore = await createSyncStore({
+  resource: "repair",
+  entries: [{ key: storageKey, field: null, fallback: {} }],
+});
+const savedOwners = JSON.parse(repairSyncStore.getItem(storageKey) || '{}');
 let ecoLifeData = readEcoLifeData();
 let equipmentList = [];
 let equipmentById = new Map();
@@ -255,7 +261,7 @@ function updateProgress() {
 document.querySelector('#repair-grid').addEventListener('change', event => {
   if (!event.target.matches('input[type="radio"]')) return;
   savedOwners[event.target.dataset.index] = event.target.value;
-  localStorage.setItem(storageKey, JSON.stringify(savedOwners));
+  repairSyncStore.setItem(storageKey, JSON.stringify(savedOwners));
   document.querySelector('#sync-status').textContent = '保存しました';
   updateProgress();
 });

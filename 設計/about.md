@@ -7,7 +7,7 @@
 - darkmodeに対応する
 
 ## データ
-- 修理を行った記録については、Myエコライフ記録（https://hinodeyasuzuki.github.io/myecoliferecords/）でlocalstorageに記録する。
+- 修理を行った記録については、Myエコライフ記録（https://s8.hinodeya-ecolife.com/eco/myecoliferecords/）でlocalstorageに記録する。
 - 修理を行った記録がある場合には、記録に基づいて「自分で/家族や知り合い/業者」で対応できることにチェックが自動的に入る。
 - そのほかはlocalStorageに保存できる。本人の意思がない限りネット上には流さない。
 
@@ -15,7 +15,7 @@
 - vuejsコンパイルなし
 
 ## リペア項目
-　項目の前にある番号（最大２つ）は、Myエコライフ記録（https://hinodeyasuzuki.github.io/myecoliferecords/）や、修理情報（https://s8.hinodeya-ecolife.com/repairinfo/）とリンクするための関係する機器番号（下1桁が0のものはカテゴリー）
+　項目の前にある番号（最大２つ）は、Myエコライフ記録（https://s8.hinodeya-ecolife.com/ecomyecoliferecords/）や、修理情報（https://s8.hinodeya-ecolife.com/repairinfo/）とリンクするための関係する機器番号（下1桁が0のものはカテゴリー）
 
 810	830	服のボタンがとれた
 810	830	服が黄ばんだ
