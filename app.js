@@ -1,5 +1,6 @@
 import { createSyncStore } from "../ehome/sync.js";
 import { getCurrentTenant } from "../ehome/common/tenant.js";
+import { PRIVACY_POLICY_HTML, hasPrivacyConsent, recordConsent } from "../ehome/common/privacy.js";
 
 getCurrentTenant().then((tenant) => {
   if (!tenant) return;
@@ -16,7 +17,6 @@ const repairs = [
 
 const storageKey = 'myrepair-owners';
 const ecoLifeStorageKey = 'homeenergycodes.savedInput';
-const consentStorageKey = 'ecolife.privacyPolicyConsent';
 const ecoLifeUrl = '../myecoliferecords/';
 const equipmentApiUrl = 'https://hinodeyasuzuki.github.io/homeenergycodes-public/api/v1/equip.json';
 const repairSyncStore = await createSyncStore({
@@ -32,16 +32,7 @@ let activeFilter = 'all';
 const modalContent = {
   privacy: {
     title: 'プライバシーポリシー',
-    body: `
-      <p>このアプリは、修理の候補や記録の選択状態をブラウザに保存し、同期時にCookieセッションに対応するサーバーへ保存します。</p>
-      <p>保存される情報は、あなたが選んだ「自分で・身近な人・業者」の判断結果や、アプリの設定です。他の利用者へ公開されることはありません。</p>
-      <ul>
-        <li>データはブラウザに保存され、ページ離脱時などにサーバーと同期されます。</li>
-        <li>Cookieは利用者のデータを識別するために使用します。</li>
-        <li>通信はHTTPSで行い、サーバーではセッション単位でアクセスを制限します。</li>
-      </ul>
-      <p>ブラウザのCookieを削除すると、サーバー上のデータを呼び出せなくなる場合があります。削除依頼は運営者へ連絡してください。</p>
-    `
+    body: PRIVACY_POLICY_HTML,
   },
   about: {
     title: 'このアプリについて',
@@ -75,7 +66,7 @@ function closeBackdrop(modal) {
 function showConsentModalIfNeeded() {
   const consentModal = document.getElementById('consent-modal');
   if (!consentModal) return;
-  if (localStorage.getItem(consentStorageKey)) {
+  if (hasPrivacyConsent()) {
     closeBackdrop(consentModal);
     return;
   }
@@ -84,7 +75,7 @@ function showConsentModalIfNeeded() {
 }
 
 function handleConsent(value) {
-  if (value === 'accepted') localStorage.setItem(consentStorageKey, new Date().toISOString().slice(0, 10));
+  if (value === 'accepted') recordConsent();
   const consentModal = document.getElementById('consent-modal');
   closeBackdrop(consentModal);
 }
