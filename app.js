@@ -1,5 +1,5 @@
 import { createSyncStore } from "../ehome/sync.js";
-import { getCurrentTenant } from "../ehome/tenant.js";
+import { getCurrentTenant } from "../ehome/common/tenant.js";
 
 getCurrentTenant().then((tenant) => {
   if (!tenant) return;
