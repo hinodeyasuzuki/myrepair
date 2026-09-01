@@ -287,12 +287,6 @@ document.addEventListener('click', event => {
     closeOpenPopup();
   }
 });
-document.querySelector('#theme-toggle').addEventListener('click', () => {
-  const dark = document.documentElement.dataset.theme === 'dark';
-  document.documentElement.dataset.theme = dark ? '' : 'dark';
-  localStorage.setItem('myrepair-theme', dark ? 'light' : 'dark');
-});
-if (localStorage.getItem('myrepair-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
 
 updateFilters();
 render();
