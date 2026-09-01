@@ -32,7 +32,7 @@ const modalContent = {
   about: {
     title: 'このアプリについて',
     body: `
-      <p>Myリペアは、「日常の小さな故障に、どこで頼めるか」を見える化するための手帳アプリです。</p>
+      <p>修理の手帖は、「日常の小さな故障に、どこで頼めるか」を見える化するための手帳アプリです。</p>
       <p>衣類、靴、住まい、水回り、電気などの修理項目を見ながら、自分で直せるか・近くの人に頼めるか・業者に頼むかを整理できます。</p>
       <p>入力内容はこの端末だけに保存されるため、いつでも気軽にメモとして使えます。</p>
       <p><a href="https://www.hinodeya-ecolife.com/" target="_blank" rel="noopener noreferrer">有限会社ひのでやエコライフ研究所</a>が提供しています。</p>
@@ -188,9 +188,9 @@ function updateFilters() {
     const category = categoryFor(fallback);
     counts.set(category, (counts.get(category) || 0) + 1);
   });
-  const tabs = [`<button class="filter-tab active" data-filter="all" role="tab">すべて <span>${repairs.length}</span></button>`];
+  const tabs = [`<button class="filter-tab active" data-filter="all" role="tab">すべて</button>`];
   counts.forEach((count, category) => {
-    tabs.push(`<button class="filter-tab" data-filter="${category}" role="tab">${category} <span>${count}</span></button>`);
+    tabs.push(`<button class="filter-tab" data-filter="${category}" role="tab">${category}</button>`);
   });
   document.querySelector('.filter-tabs').innerHTML = tabs.join('');
   document.querySelectorAll('.filter-tab').forEach(button => button.addEventListener('click', () => {
@@ -239,6 +239,12 @@ function render() {
   updateProgress();
 }
 
+function syncCardState(index) {
+  const input = document.querySelector(`input[name="repair-${index}"]`);
+  const card = input ? input.closest('.repair-card') : null;
+  if (card) card.classList.toggle('self-doable', savedOwners[index] === 'self');
+}
+
 function updateProgress() {
   const selections = Object.values(savedOwners).filter(value => ['self', 'known', 'pro'].includes(value));
   const count = selections.length;
@@ -252,11 +258,21 @@ function updateProgress() {
   document.querySelector('#self-progress-bar').style.width = `${selfPercent}%`;
 }
 
+document.querySelector('#repair-grid').addEventListener('click', event => {
+  const input = event.target.closest('input[type="radio"]');
+  if (!input) return;
+  const index = input.dataset.index;
+  if (savedOwners[index] !== input.value) return;
+  input.checked = false;
+  delete savedOwners[index];
+  syncCardState(index);
+  updateProgress();
+});
 document.querySelector('#repair-grid').addEventListener('change', event => {
   if (!event.target.matches('input[type="radio"]')) return;
   savedOwners[event.target.dataset.index] = event.target.value;
   localStorage.setItem(storageKey, JSON.stringify(savedOwners));
-  document.querySelector('#sync-status').textContent = '保存しました';
+  syncCardState(event.target.dataset.index);
   updateProgress();
 });
 window.addEventListener('storage', event => {
