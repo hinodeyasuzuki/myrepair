@@ -31,7 +31,7 @@ let activeFilter = 'all';
 
 const modalContent = {
   privacy: {
-    title: 'プライバシーポリシー',
+    title: 'プライバシーと情報の取り扱い',
     body: PRIVACY_POLICY_HTML,
   },
   about: {
@@ -40,6 +40,7 @@ const modalContent = {
       <p>修理の手帖は、「日常の小さな故障に、どこで頼めるか」を見える化するための手帳アプリです。</p>
       <p>衣類、靴、住まい、水回り、電気などの修理項目を見ながら、自分で直せるか・近くの人に頼めるか・業者に頼むかを整理できます。</p>
       <p>入力内容はこの端末だけに保存されるため、いつでも気軽にメモとして使えます。</p>
+      <p>修理の手帖は、エコライフ手帖シリーズのパッケージの一つです。</p>
       <p><a href="https://www.hinodeya-ecolife.com/" target="_blank" rel="noopener noreferrer">有限会社ひのでやエコライフ研究所</a>が提供しています。</p>
     `
   }
