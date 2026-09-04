@@ -10,9 +10,40 @@ getCurrentTenant().then((tenant) => {
 }).catch((error) => console.error("自治体設定の取得に失敗しました", error));
 
 const repairs = [
-  ['衣類', '服のボタンがとれた', ['810', '830']], ['衣類', '服が黄ばんだ', ['810', '830']], ['衣類', '服の縫い目がほつれた', ['810', '830']], ['衣類', '服のゴムがのびた', ['830', '840']], ['衣類', 'ファスナーのかみ合わせが悪くなった', ['813', '877']], ['衣類', 'ズボンに穴があいた', ['813', '831']], ['衣類', 'レインウェアの撥水がなくなった', ['856']], ['靴', '靴底がすり減った', ['860']], ['靴', '革靴が色あせた', ['863']],
-  ['住まい', '網戸が破れた', ['12']], ['住まい', 'アルミサッシ・網戸が開けにくい', ['10']], ['住まい', 'フローリングがへこんだ', ['22']], ['住まい', '雨漏りがする', ['23']], ['水回り', 'トイレの便器内に水がちょろちょろ流れ続ける', ['73']], ['水回り', '蛇口から水漏れしている', ['74']], ['水回り', 'キッチンの排水がつまった', ['75']], ['家事', '陶器が割れた', ['151']], ['住まい', '玄関の鍵が回しにくい', ['14']],
-  ['家事', '包丁が切れにくくなった', ['133']], ['住まい', '木製家具に傷がついた', ['710']], ['住まい', '机や椅子の脚ががたつく', ['715']], ['住まい', '引き出しや扉の開けしめがしにくい', ['712', '714']], ['生活用品', '傘の骨が折れた', ['341']], ['乗り物', '自転車がパンクした', ['956']], ['乗り物', '自転車のブレーキが効かない', ['956']], ['乗り物', '自転車のチェーンがガタガタする', ['956']], ['電気', '乾電池を使う機器の電気が入らない', ['460', '334']], ['電気', '腕時計の電池が切れた', ['283']], ['電気', '電球が切れた', ['230']], ['電気', '親子電話の子機が充電できない', ['242']], ['電気', 'スマホの電池の持ちが悪くなった', ['241']], ['電気', 'スマホのガラスが割れた', ['241']], ['電気', 'パソコンが立ち上がらない', ['441', '442']], ['電気', 'パソコンがウィルスに感染した', ['441', '442']]
+  ['衣類', '服のボタンがとれた', ['810', '830'],['ボタン']], 
+  ['衣類', '服が黄ばんだ', ['810', '830'],['黄ばみ','色','汚れ','漂白']], 
+  ['衣類', '服の縫い目がほつれた', ['810', '830'],['ほつれ',"縫","パッチ"]], 
+  ['衣類', '服のゴムがのびた', ['830', '840'],['ゴム','ゆる']], 
+  ['衣類', 'ファスナーのかみ合わせが悪くなった', ['813', '877'],['ファスナー','チャック']], 
+  ['衣類', 'ズボンに穴があいた', ['813', '831'],['穴','破れ','布']], 
+  ['衣類', 'レインウェアの撥水がなくなった', ['856']], 
+  ['靴', '靴底がすり減った', ['860'],['靴底','すり']], 
+  ['靴', '革靴が色あせた', ['863'],['色','あせ']],
+  ['住まい', '網戸が破れた', ['12'],['破れ']], 
+  ['住まい', 'アルミサッシ・網戸が開けにくい', ['10'],['開','開けにくい']], 
+  ['住まい', 'フローリングがへこんだ', ['22']], 
+  ['住まい', '雨漏りがする', ['23'],['雨','ペンキ']], 
+  ['水回り', 'トイレの便器内に水がちょろちょろ流れ続ける', ['73']], 
+  ['水回り', '蛇口から水漏れしている', ['74']], 
+  ['水回り', 'キッチンの排水がつまった', ['75']], 
+  ['家事', '陶器が割れた', ['151']], 
+  ['住まい', '玄関の鍵が回しにくい', ['14']],
+  ['家事', '包丁が切れにくくなった', ['133']], 
+  ['住まい', '木製家具に傷がついた', ['710']], 
+  ['住まい', '机や椅子の脚ががたつく', ['715']], 
+  ['住まい', '引き出しや扉の開けしめがしにくい', ['712', '714'],['開','しめ','閉']], 
+  ['生活用品', '傘の骨が折れた', ['341']], 
+  ['乗り物', '自転車がパンクした', ['956'],['パンク','空気','タイヤ']], 
+  ['乗り物', '自転車のブレーキが効かない', ['956'],['ブレーキ','止']], 
+  ['乗り物', '自転車のチェーンがガタガタする', ['956'],['チェーン','ガタ']], 
+  ['電気', '乾電池を使う機器の電気が入らない', ['460', '334'],['電池','電気','入']], 
+  ['電気', '腕時計の電池が切れた', ['283'],['電池','切れ']], 
+  ['電気', '電球が切れた', ['230']], 
+  ['電気', '親子電話の子機が充電できない', ['242']], 
+  ['電気', 'スマホの電池の持ちが悪くなった', ['241'],['電池','持ち']], 
+  ['電気', 'スマホのガラスが割れた', ['241'],['ガラス','割']], 
+  ['電気', 'パソコンが立ち上がらない', ['441', '442']], 
+  ['電気', 'パソコンがウィルスに感染した', ['441', '442'],['ウィルス']]
 ];
 
 const storageKey = 'myrepair-owners';
@@ -149,15 +180,17 @@ function recordMatchesRepair(itemIds, product) {
   return itemIds.some(id => String(product.equip_id) === String(id) || categoryMembers(id).some(member => String(member.id) === String(product.equip_id)));
 }
 
-function repairRecordsFor(ids) {
+function repairRecordsFor(ids, keywords) {
   const products = ecoLifeData.products || {};
   const productIds = Object.entries(products)
     .filter(([, product]) => recordMatchesRepair(ids, product))
     .map(([productId]) => productId);
-  return Object.entries(ecoLifeData.repairlog || {})
+  const records = Object.entries(ecoLifeData.repairlog || {})
     .filter(([, log]) => productIds.includes(String(log.product_id)))
     .map(([id, log]) => ({ id, log, product: products[log.product_id] }))
     .sort((a, b) => String(b.log.created_at || '').localeCompare(String(a.log.created_at || '')));
+  if (!keywords || keywords.length === 0) return records;
+  return records.filter(({ log }) => keywords.some(keyword => (log.about || '').includes(keyword)));
 }
 
 function recordDate(log) {
@@ -165,8 +198,8 @@ function recordDate(log) {
   return log.created_at ? new Date(log.created_at).toLocaleDateString('ja-JP') : '日付未登録';
 }
 
-function recordsHtml(ids) {
-  const records = repairRecordsFor(ids);
+function recordsHtml(ids, keywords) {
+  const records = repairRecordsFor(ids, keywords);
   const repairUrl = `${ecoLifeUrl}?repair_id=${encodeURIComponent(ids[0])}`;
   const label = records.length ? '修理済' : '新規記録';
   return `<div class="record-cell"><a class="record-button${records.length ? ' completed' : ''}" href="${repairUrl}" target="_blank" rel="noreferrer">${label}</a></div>`;
@@ -227,7 +260,7 @@ function render() {
     return matchesFilter;
   });
   const grid = document.querySelector('#repair-grid');
-  grid.innerHTML = visible.map(([fallback, title, ids], index) => {
+  grid.innerHTML = visible.map(([fallback, title, ids, keywords], index) => {
     const itemIndex = repairs.findIndex(item => item[1] === title);
     const category = categoryFor(fallback);
     const current = savedOwners[itemIndex] || '';
@@ -235,7 +268,7 @@ function render() {
     return `<article class="repair-card${current === 'self' ? ' self-doable' : ''}" style="animation-delay:${Math.min(index * 25, 250)}ms">
       <div class="repair-detail">
       <h2>${title}</h2><div class="links">${idLinks}</div></div>
-      ${recordsHtml(ids)}
+      ${recordsHtml(ids, keywords)}
       <div class="repair-possibility"><div class="owner-options" aria-label="${title}の修理可能性">
         ${[['self', '自分で'], ['known', '身近な人'], ['pro', '業者']].map(([value, label]) => `<label class="owner-option"><input type="radio" name="repair-${itemIndex}" value="${value}" data-index="${itemIndex}" ${current === value ? 'checked' : ''}><span>${label}</span></label>`).join('')}
       </div></div>
